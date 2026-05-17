@@ -27,3 +27,33 @@ return elapsedBeforePause;
 return elapsedBeforePause + (Date.now() - startTime);
 }
 // Format a millisecond value as "MM:SS.cc"
+
+function formatTime(ms) {
+const totalSeconds = Math.floor(ms / 1000);
+const minutes = Math.floor(totalSeconds / 60);
+const seconds = totalSeconds % 60;
+const centis = Math.floor((ms % 1000) / 10);
+const mm = String(minutes).padStart(2, "0");
+const ss = String(seconds).padStart(2, "0");
+const cc = String(centis).padStart(2, "0");
+return `${mm}:${ss}.${cc}`;
+}
+
+function tick() {
+timeDisplay.textContent = formatTime(getElapsedMs());
+}
+
+timeDisplay.textContent = formatTime(0);
+
+function start() {
+startTime = Date.now();
+// Update the display roughly every 10ms.
+intervalId = setInterval(tick, 10);
+// Switch the button to "Stop".
+startStopBtn.textContent = "Stop";
+startStopBtn.classList.remove("btn--start");
+startStopBtn.classList.add("btn--stop");
+// Lap is only meaningful while running.
+lapBtn.disabled = false;
+}
+function stop() {
