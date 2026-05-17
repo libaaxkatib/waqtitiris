@@ -57,3 +57,63 @@ startStopBtn.classList.add("btn--stop");
 lapBtn.disabled = false;
 }
 function stop() {
+
+    // Add this run's duration to our saved total.
+elapsedBeforePause += Date.now() - startTime;
+startTime = null;
+// Stop the ticking.
+clearInterval(intervalId);
+intervalId = null;
+// Switch the button back to "Start".
+startStopBtn.textContent = "Start";
+startStopBtn.classList.remove("btn--stop");
+startStopBtn.classList.add("btn--start");
+// No laps while paused.
+lapBtn.disabled = true;
+// Render once more to make sure the final value shows.
+tick();
+}
+
+startStopBtn.addEventListener("click", function () {
+// Toggle: if running, stop; if not, start.
+if (intervalId === null) {
+start();
+} else {
+stop();
+}
+});
+
+function reset() {
+// Stop the interval if running.
+if (intervalId !== null) {
+clearInterval(intervalId);
+
+intervalId = null;
+}
+startTime = null;
+elapsedBeforePause = 0;
+laps = [];
+// Reset UI.
+timeDisplay.textContent = formatTime(0);
+startStopBtn.textContent = "Start";
+startStopBtn.classList.remove("btn--stop");
+startStopBtn.classList.add("btn--start");
+lapBtn.disabled = true;
+renderLaps();
+}
+
+resetBtn.addEventListener("click", reset);
+
+function recordLap() {
+const totalElapsed = getElapsedMs();
+// The split time for this lap = total elapsed minus
+// the sum of all previous lap times.
+const sumOfPreviousLaps = laps.reduce(function (sum, lap) {
+return sum + lap.split;
+}, 0);
+const splitMs = totalElapsed - sumOfPreviousLaps;
+laps.push({
+split: splitMs,
+total: totalElapsed
+});
+renderLaps(); }
