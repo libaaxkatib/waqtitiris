@@ -117,3 +117,52 @@ split: splitMs,
 total: totalElapsed
 });
 renderLaps(); }
+
+lapBtn.addEventListener("click", recordLap);
+
+function renderLaps() {
+lapsList.innerHTML = "";
+if (laps.length === 0) {
+lapsHeading.classList.add("laps-heading--hidden");
+return;
+}
+lapsHeading.classList.remove("laps-heading--hidden");
+// Find fastest and slowest splits (only meaningful with 2+ laps).
+let fastestIndex = -1;
+let slowestIndex = -1;
+if (laps.length >= 2) {
+let minSplit = Infinity;
+let maxSplit = -Infinity;
+laps.forEach(function (lap, i) {
+if (lap.split < minSplit) {
+minSplit = lap.split;
+fastestIndex = i;
+}
+if (lap.split > maxSplit) {
+maxSplit = lap.split;
+slowestIndex = i;
+}
+});
+}
+// Build the rows. Newest laps go on top.
+for (let i = laps.length - 1; i >= 0; i--) {
+const lap = laps[i];
+const li = document.createElement("li");
+li.className = "lap-item";
+if (i === fastestIndex) li.classList.add("lap-item--fastest");
+if (i === slowestIndex) li.classList.add("lap-item--slowest");
+const numberSpan = document.createElement("span");
+numberSpan.className = "lap-number";
+numberSpan.textContent = `Lap ${i + 1}`;
+const splitSpan = document.createElement("span");
+splitSpan.className = "lap-split";
+splitSpan.textContent = formatTime(lap.split);
+const totalSpan = document.createElement("span");
+totalSpan.className = "lap-total";
+totalSpan.textContent = formatTime(lap.total);
+li.appendChild(numberSpan);
+li.appendChild(splitSpan);
+li.appendChild(totalSpan);
+lapsList.appendChild(li);
+}
+}
